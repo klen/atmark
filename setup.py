@@ -72,12 +72,12 @@ setup(
 
     entry_points={
         'console_scripts': [
-            '@ = at:at',
-            '@@ = at:atat',
+            '@ = atmark:at',
+            '@@ = atmark:atat',
         ],
     },
 
-    modules=['atmark'],
+    py_modules=['atmark'],
     include_package_data=True,
     install_requires=install_requires,
     tests_require=tests_require,
