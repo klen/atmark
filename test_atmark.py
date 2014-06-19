@@ -1,4 +1,7 @@
-""" Tests for `at` module. """
+#!/usr/bin/env python
+# coding: utf-8
+
+""" Tests for `atmark` module. """
 
 import pytest # noqa
 
@@ -21,12 +24,23 @@ def test_at():
     assert ["mv test.py test.jpg", "mv some-file some_file.jpg"] == result
 
 
+def test_unicode():
+    result = _at(u"ехали медведи", "upper")
+    assert [u'ЕХАЛИ', u'МЕДВЕДИ'] == result
+
+
 def test_atat():
     result = _atat("test.py some-file")
     assert ['test.py', 'some-file'] == result
 
     result = _atat("test.py some-file", "sort", "head")
     assert ['some-file'] == result
+
+
+def test_cli():
+    from atmark import _cli, _at as _
+    with pytest.raises(SystemExit):
+        _cli(_, [])
 
 
 def test_errors():
@@ -132,6 +146,9 @@ def test_head():
     result = _at("/test.py /some-file", "split", ".", "head")
     assert ["/test", "/some-file"] == result
 
+    result = _at("/test.py /some-file", "split", ".", "tail", "head")
+    assert ["py"] == result
+
     result = _at("/test.py /some-file", "split", ".", "h")
     assert ["/test", "/some-file"] == result
 
@@ -216,9 +233,9 @@ def test_grep():
 
 
 def _at(stream, *chain):
-    from atmark import _at as _
+    from atmark import _at as _, text_type
     stream = stream.split()
-    return map(str, _(list(chain), stream=stream))
+    return map(text_type, _(list(chain), stream=stream))
 
 
 def _atat(stream, *chain):
