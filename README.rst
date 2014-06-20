@@ -7,12 +7,12 @@ The Atmark -- Awk+sed for humans.
 
 Do this: ::
 
-    # Rename file in current directory (file-name -> file_name.jpg)
+    # Rename a files in current directory (file-name -> file_name.jpg)
     $ ls | @ replace - _ "mv # @.jpg" | sh
 
 Except this: ::
 
-    # Rename file in current directory (file-name -> file_name.jpg)
+    # Rename a files in current directory (file-name -> file_name.jpg)
     $ ls | awk '{print $1 $1}' | sed s/"-"/"_"/ | awk '{print "mv", $2, $1, ".jpg"}' | sh
 
 
@@ -29,9 +29,9 @@ More deep: ::
                 |
                  \_ function name (replace)
 
-More examples: ::
+More examples:
 
-    # Change files extension .html > .php
+Change file's extension .html > .php ::
 
     # Atmark
     $ ls | @ split . head "mv # @.php"
@@ -40,7 +40,7 @@ More examples: ::
     $ ls | awk '{printf "mv "$0; sub(/html/,"php"); print " "$0}' | sh
 
 
-    # Print all but the first three columns
+Print all but the first three columns ::
 
     # Atmark
     $ ls -la | @ split_ drop 3 join_
@@ -49,7 +49,8 @@ More examples: ::
     $ ls -la | awk '{for(i=1;i<4;i++) $i="";print}'
 
 
-    # Kill process by name
+Kill process by name ::
+
     # Atmark
     $ ps aux | @ grep sysmond$ index 2 "kill @" | sh 
 
@@ -77,8 +78,8 @@ And more, more, more.
 
 .. _documentation:
 
-**Docs are available at https://atmark.readthedocs.org/. Pull requests
-with documentation enhancements and/or fixes are awesome and most welcome.**
+.. **Docs are available at https://atmark.readthedocs.org/. Pull requests
+.. with documentation enhancements and/or fixes are awesome and most welcome.**
 
 .. _contents:
 
@@ -205,7 +206,7 @@ Contributors
 .. _license:
 
 License
-=======
+========
 
 Licensed under a `BSD license`_.
 
