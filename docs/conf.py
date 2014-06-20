@@ -5,7 +5,7 @@ import os
 import sys
 import datetime
 
-from at import __version__ as release
+from atmark import __version__ as release
 
 sys.path.insert(0, os.path.abspath(
     os.path.join(os.path.dirname(__file__), '..')))
