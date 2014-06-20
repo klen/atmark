@@ -25,7 +25,7 @@ from __future__ import print_function
 # Package information
 # ===================
 
-__version__ = "0.1.4"
+__version__ = "0.1.5"
 __project__ = "atmark"
 __author__ = "Kirill Klenov <horneds@gmail.com>"
 __license__ = "BSD"
@@ -117,6 +117,10 @@ def at_head(arg):
 @_command(1, 'ix', 'i')
 def at_index(arg, index):
     """ %s N -- get the N-th element/character from list/string. """
+    try:
+        index = int(index)
+    except ValueError:
+        return None
     return arg.value[index]
 
 

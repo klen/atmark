@@ -77,8 +77,8 @@ And more, more, more.
 
 .. _documentation:
 
-.. **Docs are available at https://atmark.readthedocs.org/. Pull requests
-.. with documentation enhancements and/or fixes are awesome and most welcome.**
+**Docs are available at https://atmark.readthedocs.org/. Pull requests
+with documentation enhancements and/or fixes are awesome and most welcome.**
 
 .. _contents:
 
