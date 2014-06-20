@@ -61,23 +61,23 @@ And more, more, more.
 
 .. _badges:
 
-.. image:: https://secure.travis-ci.org/klen/at.png?branch=develop
-    :target: http://travis-ci.org/klen/at
+.. image:: https://secure.travis-ci.org/klen/atmark.png?branch=develop
+    :target: http://travis-ci.org/klen/atmark
     :alt: Build Status
 
-.. image:: https://coveralls.io/repos//at/badge.png?branch=develop
-    :target: https://coveralls.io/r/klen/at
+.. image:: https://coveralls.io/repos//atmark/badge.png?branch=develop
+    :target: https://coveralls.io/r/klen/atmark
     :alt: Coverals
 
-.. image:: https://pypip.in/d/at/badge.png
-    :target: https://pypi.python.org/pypi/at
+.. image:: https://pypip.in/d/atmark/badge.png
+    :target: https://pypi.python.org/pypi/atmark
 
-.. image:: https://badge.fury.io/py/at.png
-    :target: http://badge.fury.io/py/at
+.. image:: https://badge.fury.io/py/atmark.png
+    :target: http://badge.fury.io/py/atmark
 
 .. _documentation:
 
-**Docs are available at https://at.readthedocs.org/. Pull requests
+**Docs are available at https://atmark.readthedocs.org/. Pull requests
 with documentation enhancements and/or fixes are awesome and most welcome.**
 
 .. _contents:
