@@ -20,14 +20,15 @@ LIST OF THE BUILT IN FUNCTIONS
 
 """
 
+from __future__ import print_function
+
 # Package information
 # ===================
 
-__version__ = "0.1.1"
+__version__ = "0.1.2"
 __project__ = "atmark"
 __author__ = "Kirill Klenov <horneds@gmail.com>"
 __license__ = "BSD"
-
 
 import sys
 import codecs
@@ -300,7 +301,7 @@ def _get_stream():
 def _cli(func, args):
     stream = _get_stream()
     if args and args[0] in ('-h', '--help'):
-        print __doc__
+        print(__doc__)
         sys.exit()
     mod = text_type
     if args and args[0] in ('-d', '--debug'):
@@ -308,7 +309,7 @@ def _cli(func, args):
         mod = repr
     for arg in func(args, stream):
         if arg.value is not None:
-            print mod(arg)
+            print(mod(arg))
     sys.exit()
 
 

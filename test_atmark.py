@@ -235,7 +235,7 @@ def test_grep():
 def _at(stream, *chain):
     from atmark import _at as _, text_type
     stream = stream.split()
-    return map(text_type, _(list(chain), stream=stream))
+    return list(map(text_type, _(list(chain), stream=stream)))
 
 
 def _atat(stream, *chain):
