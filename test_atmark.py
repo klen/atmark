@@ -243,6 +243,11 @@ def test_grep():
     assert ['/test.py'] == result
 
 
+def test_map():
+    result = _at("test459.py some-file234", "split", ".", "map", "trim", "123456789", "join", ".")
+    assert ["test.py", "some-file"] == result
+
+
 def _at(stream, *chain):
     from atmark import _at as _, text_type
     stream = stream.split()
