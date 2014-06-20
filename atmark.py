@@ -25,7 +25,7 @@ from __future__ import print_function
 # Package information
 # ===================
 
-__version__ = "0.3.0"
+__version__ = "0.4.0"
 __project__ = "atmark"
 __author__ = "Kirill Klenov <horneds@gmail.com>"
 __license__ = "BSD"
@@ -167,7 +167,7 @@ def at_lower(arg):
     return value.lower()
 
 
-@_command(2, 'r')
+@_command(2, 'r', 'sub')
 def at_replace(arg, p1, p2):
     """ %s FROM TO -- replace in a string/list FROM to TO. """
     value = text_type(arg)
@@ -212,6 +212,13 @@ def at_strip(arg, pattern):
     """ %s PATTERN -- return the string with leading and trailing PATTERN removed. """
     value = text_type(arg)
     return value.strip(pattern)
+
+
+@_command(0, 's_', 'trim_')
+def at_strip_(arg):
+    """ %s -- same as strip but trims a whitespaces. """
+    value = text_type(arg)
+    return value.strip()
 
 
 @_command(0, 't')

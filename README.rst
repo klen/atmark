@@ -8,7 +8,7 @@ The Atmark -- Awk+sed for humans.
 Do this: ::
 
     # Rename a files in current directory (file-name -> file_name.jpg)
-    $ ls | @ replace - _ "mv # @.jpg" | sh
+    $ ls | @ sub - _ "mv # @.jpg" | sh
 
 Except this: ::
 
@@ -18,16 +18,16 @@ Except this: ::
 
 More deep: ::
 
-    $ ls | @  replace   -   _   "mv # @.jpg" | sh
-              -------   |   |   ------------
-                |       |   |       \_ format string (# - link on first state,
-                |       |   |                         @ - link on current state (after replace))
-                |       |   |
-                |       |    \_ second replace param (to replace)
-                |       |
-                |        \_ first replace param (what replace)
-                |
-                 \_ function name (replace)
+    $ ls | @  sub  -  _  "mv # @.jpg" | sh
+              ---  |  |  ------------
+               |   |  |      \_ format string (# - link on first state,
+               |   |  |                        @ - link on current state (after replace))
+               |   |  |
+               |   |   \_ second replace param (to replace)
+               |   |
+               |    \_ first replace param (what replace)
+               |
+                \_ function name (substitute)
 
 More examples:
 
@@ -105,6 +105,9 @@ Installation
 Usage
 =====
 
+Get help
+--------
+
 ::
 
     $ @ -h
@@ -116,11 +119,11 @@ Usage
 
     Example. Replace "_" with "-" in files in current dir and change the files extensions to jpg:
 
-        $ ls | @ replace _ -  split . "mv # @.jpg"
+        $ ls | @ sub _ -  split . "mv # @.jpg"
 
     It is mean:
 
-        $ ls > replace($LINE, "_", "-") > split($RESULT, ".") > format($RESULT, "mv $LINE $RESULT.jpg")
+        $ ls > sub($LINE, "_", "-") > split($RESULT, ".") > format($RESULT, "mv $LINE $RESULT.jpg")
 
     You can use "@ --debug ARGS" for debug Armark commands.
 
@@ -160,7 +163,7 @@ Usage
 
     lower/l -- make the string is lowercase
 
-    replace/r FROM TO -- replace in a string/list FROM to TO.
+    replace/sub/r FROM TO -- replace in a string/list FROM to TO.
 
     reverse -- reverse list/string.
 
@@ -173,6 +176,8 @@ Usage
     split_/sp_ -- same as split by splited a string by whitespace characters
 
     strip/s/trim PATTERN -- return the string with leading and trailing PATTERN removed.
+
+    strip_/s_/trim_ -- same as split by trim a string by whitespace characters
 
     tail/t -- extract the elements after the head of a list
 
