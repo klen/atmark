@@ -71,6 +71,7 @@ def at_format(arg, pattern):
         $ ls | @ upper format "@.BAK"
         $ ls | @ upper "@.BAK" """
     value = text_type(arg)
+    pattern = string_decode(pattern)
     return pattern.replace('@', value).replace('#', arg.sstart)
 
 
@@ -127,6 +128,7 @@ def at_index(arg, index):
 @_command(1, 'j')
 def at_join(arg, sep):
     """ %s SEPARATOR -- concatenate a list/string with intervening occurrences of SEPARATOR """
+    sep = string_decode(sep)
     return sep.join(arg.value)
 
 
@@ -323,10 +325,14 @@ at = lambda: _cli(_at, sys.argv[1:])
 atat = lambda: _cli(_atat, sys.argv[1:])
 
 
-if not PY2:
-    text_type = str
-else:
+# Compat tools
+if PY2:
     text_type = unicode
+    string_decode = lambda b: text_type(b).decode('string_escape')
+else:
+    text_type = str
+    string_decode = lambda b: text_type(b.encode('utf-8').decode('unicode_escape'))
+
 
 if __name__ == '__main__':
     at()

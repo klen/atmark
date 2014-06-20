@@ -198,8 +198,8 @@ def test_index():
 
 
 def test_join():
-    result = _at("/test.py /some-file", "split", ".", "join", ":")
-    assert ["/test:py", "/some-file"] == result
+    result = _at("/test.py /some-file", "split", ".", "join", "\\t")
+    assert ["/test\tpy", "/some-file"] == result
 
     result = _at("/test.py /some-file", "split", ".", "j", ":")
     assert ["/test:py", "/some-file"] == result
