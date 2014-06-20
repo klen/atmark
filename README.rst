@@ -42,8 +42,8 @@ Change file's extension .html > .php ::
 
 Print all but the first three columns ::
 
-    # Atmark
-    $ ls -la | @ split_ drop 3 join_
+    # Atmark (\\t means tab)
+    $ ls -la | @ split_ drop 3 join \\t
 
     # Awk/Sed
     $ ls -la | awk '{for(i=1;i<4;i++) $i="";print}'
