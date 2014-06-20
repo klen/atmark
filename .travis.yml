@@ -3,10 +3,10 @@ language: python
 python: 2.7
 
 env:
+    - TOXENV=cov
     - TOXENV=py26
     - TOXENV=py27
     - TOXENV=py33
-    - TOXENV=cov
 
 branches:
     only:
