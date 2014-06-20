@@ -25,7 +25,7 @@ from __future__ import print_function
 # Package information
 # ===================
 
-__version__ = "0.1.1"
+__version__ = "0.1.2"
 __project__ = "atmark"
 __author__ = "Kirill Klenov <horneds@gmail.com>"
 __license__ = "BSD"
