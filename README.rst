@@ -66,9 +66,8 @@ And more, more, more.
     :target: http://travis-ci.org/klen/atmark
     :alt: Build Status
 
-.. image:: https://coveralls.io/repos//atmark/badge.png?branch=develop
-    :target: https://coveralls.io/r/klen/atmark
-    :alt: Coverals
+.. image:: https://coveralls.io/repos/klen/atmark/badge.png?branch=develop
+    :target: https://coveralls.io/r/klen/atmark?branch=develop
 
 .. image:: https://pypip.in/d/atmark/badge.png
     :target: https://pypi.python.org/pypi/atmark
