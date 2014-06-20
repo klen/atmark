@@ -163,6 +163,8 @@ Get help
 
     lower/l -- make the string is lowercase
 
+    map FUNCTION -- apply the following function to each element/character in list/string.
+
     replace/sub/r FROM TO -- replace in a string/list FROM to TO.
 
     reverse -- reverse list/string.

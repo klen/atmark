@@ -1,6 +1,8 @@
 2014-06-20  klen
 
-	* Version 0.1.2
+	* Version 0.5.0
+	* Fix lists operations
+	* Add map
 	* Fix python3
 
 2014-06-19  klen

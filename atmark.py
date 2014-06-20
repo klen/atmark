@@ -25,7 +25,7 @@ from __future__ import print_function
 # Package information
 # ===================
 
-__version__ = "0.4.0"
+__version__ = "0.5.0"
 __project__ = "atmark"
 __author__ = "Kirill Klenov <horneds@gmail.com>"
 __license__ = "BSD"
@@ -167,6 +167,12 @@ def at_lower(arg):
     return value.lower()
 
 
+@_command(1)
+def at_map(arg, func, *params):
+    """ %s FUNCTION -- apply the following function to each element/character in list/string. """
+    return [func(el, *params) for el in arg.value]
+
+
 @_command(2, 'r', 'sub')
 def at_replace(arg, p1, p2):
     """ %s FROM TO -- replace in a string/list FROM to TO. """
@@ -288,15 +294,37 @@ def _atat(args, stream):
     return arg.value
 
 
+def _cli(func, args):
+    stream = _get_stream()
+    if args and args[0] in ('-h', '--help'):
+        print(__doc__)
+        sys.exit()
+    mod = text_type
+    if args and args[0] in ('-d', '--debug'):
+        args.pop(0)
+        mod = repr
+    for arg in func(args, stream):
+        print(mod(arg))
+    sys.exit()
+
+
 def _tokenize(args):
+
+    def take_params(args, nump):
+        """ Function description. """
+        while nump:
+            nump -= 1
+            yield args.pop(0)
+
     try:
         while args:
             arg = args.pop(0).strip()
             if arg in AT_COMMANDS:
-                (func, nump), params = AT_COMMANDS[arg], []
-                while nump:
-                    params.append(args.pop(0))
-                    nump -= 1
+                func, nump = AT_COMMANDS[arg]
+                params = list(take_params(args, nump)) if nump else []
+                if arg == 'map':
+                    f, nump = AT_COMMANDS[params[0]]
+                    params = [f] + list(take_params(args, nump))
                 yield func, params
                 continue
             yield at_format, [arg]
@@ -318,21 +346,6 @@ def _get_stream():
         line = line.decode(encoding).strip()
         stream.append(line)
     return stream
-
-
-def _cli(func, args):
-    stream = _get_stream()
-    if args and args[0] in ('-h', '--help'):
-        print(__doc__)
-        sys.exit()
-    mod = text_type
-    if args and args[0] in ('-d', '--debug'):
-        args.pop(0)
-        mod = repr
-    for arg in func(args, stream):
-        if arg.value is not None:
-            print(mod(arg))
-    sys.exit()
 
 
 __doc__ += "\n\n Current version: " + __version__
