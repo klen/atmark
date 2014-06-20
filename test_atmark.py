@@ -29,6 +29,14 @@ def test_unicode():
     assert [u'ЕХАЛИ', u'МЕДВЕДИ'] == result
 
 
+def test_history():
+    result = _at("ab bc", "upper", "cap", "# #1 #2")
+    assert result == ['ab AB Ab', 'bc BC Bc']
+
+    result = _at("q we rty", "cap", "len", "#1 @")
+    assert result == ['Q 1', 'We 2', 'Rty 3']
+
+
 def test_atat():
     result = _atat("test.py some-file")
     assert ['test.py', 'some-file'] == result
@@ -105,10 +113,10 @@ def test_capitalize():
     result = _at("tesT.py Some-file", "capitalize")
     assert ["Test.py", "Some-file"] == result
 
-    result = _at("tesT.py Some-file", "c")
+    result = _at("tesT.py Some-file", "cap")
     assert ["Test.py", "Some-file"] == result
 
-    result = _atat("tesT.py Some-file", "c")
+    result = _atat("tesT.py Some-file", "cap")
     assert ["Test.pysome-file"] == result
 
 

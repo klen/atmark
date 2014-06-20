@@ -25,7 +25,7 @@ from __future__ import print_function
 # Package information
 # ===================
 
-__version__ = "0.2.0"
+__version__ = "0.3.0"
 __project__ = "atmark"
 __author__ = "Kirill Klenov <horneds@gmail.com>"
 __license__ = "BSD"
@@ -38,6 +38,9 @@ from re import compile as re
 
 AT_COMMANDS = {}
 PY2 = sys.version_info[0] == 2
+
+CURRENT_RE = re(r'(?=[^\\]?)@')
+HISTORY_RE = re(r'(?=[^\\]?)#(\d)*')
 
 
 def _command(nump=0, *syns):
@@ -63,19 +66,26 @@ def _command(nump=0, *syns):
 def at_format(arg, pattern):
     """ %s PATTERN -- format and print a string.
 
-    Symbol '#' in PATTERN represents the line of the input (before pipe "|").
     Symbol '@' in PATTERN represents the current value in process of composition of fuctions.
+    Symbol '#' in PATTERN represents the history state.
+        Where   # or #0 -- first state, #<n> (#1, #2) -- state with number n
 
     Synonyms: You can drop `format` function name. This lines are equalent:
 
         $ ls | @ upper format "@.BAK"
         $ ls | @ upper "@.BAK" """
-    value = text_type(arg)
     pattern = string_decode(pattern)
-    return pattern.replace('@', value).replace('#', arg.sstart)
+    value = text_type(arg)
+    value = CURRENT_RE.sub(value, pattern)
+
+    def get_history(m):
+        index = int(m.group(1) or 0)
+        return text_type(arg.history[index])
+    value = HISTORY_RE.sub(get_history, value)
+    return value
 
 
-@_command(0, 'c')
+@_command(0, 'cap')
 def at_capitalize(arg):
     """ %s -- capitalize the string. """
     value = text_type(arg)
@@ -170,7 +180,7 @@ def at_reverse(arg):
     return arg.value[::-1]
 
 
-@_command(1, 'rs')
+@_command(1, 'rs', 'rtrim')
 def at_rstrip(arg, pattern):
     """ %s PATTERN -- return the string with trailing PATTERN removed. """
     value = text_type(arg)
@@ -197,7 +207,7 @@ def at_split_(arg):
     return value.split()
 
 
-@_command(1, 's')
+@_command(1, 's', 'trim')
 def at_strip(arg, pattern):
     """ %s PATTERN -- return the string with leading and trailing PATTERN removed. """
     value = text_type(arg)
@@ -231,7 +241,6 @@ class Arg(object):
         self.start = value
         self.value = value
         self.history = [value]
-        self.sstart = text_type(self)
 
     def __repr__(self):
         return " > ".join(text_type(h) for h in self.history)
