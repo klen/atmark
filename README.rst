@@ -34,7 +34,7 @@ More examples: ::
     # Change files extension .html > .php
 
     # Atmark
-    $ ls | grep .jpeg | @ split . head "mv # @.php"
+    $ ls | @ split . head "mv # @.php"
 
     # Awk/Sed
     $ ls | awk '{printf "mv "$0; sub(/html/,"php"); print " "$0}' | sh
@@ -126,8 +126,6 @@ Usage
 
     ===================================================================================
     LIST OF THE BUILT IN FUNCTIONS
-
-
 
     format PATTERN -- format and print a string.
 
