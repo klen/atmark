@@ -117,6 +117,10 @@ def at_head(arg):
 @_command(1, 'ix', 'i')
 def at_index(arg, index):
     """ %s N -- get the N-th element/character from list/string. """
+    try:
+        index = int(index)
+    except ValueError:
+        return None
     return arg.value[index]
 
 

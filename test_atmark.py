@@ -53,6 +53,9 @@ def test_errors():
     result = _atat("test.py some-file", "sort", "take")
     assert ['some-filetest.py'] == result
 
+    result = _at("test.py some-file", "index", "lol")
+    assert [] == result
+
 
 def test_format():
     result = _at("test.py some-file", "format", "@_")
@@ -184,13 +187,13 @@ def test_drop():
 
 
 def test_index():
-    result = _at("100 200 300 400", "index", 0)
+    result = _at("100 200 300 400", "index", '0')
     assert ["1", "2", "3", "4"] == result
 
-    result = _at("100 200 300 400", "ix", 0)
+    result = _at("100 200 300 400", "ix", '0')
     assert ["1", "2", "3", "4"] == result
 
-    result = _atat("100 200 300 400", "index", 2)
+    result = _atat("100 200 300 400", "index", '2')
     assert ["300"] == result
 
 
