@@ -14,14 +14,13 @@ It is mean:
     $ ls > replace($LINE, "_", "-") > split($RESULT, ".") > format($RESULT, "mv $LINE $RESULT.jpg")
 
 You can use "@ --debug ARGS" for debug Armark commands. """
-
-import sys
 import os
+import sys
 
-from ._compat import text_type
 from ._bashcomplete import do_complete, COMPLETION_SCRIPT
-from .utils import echo, style, get_stream
+from ._compat import text_type
 from .commands import AT_COMMANDS, at_format, AT_COMMANDS_DOCS
+from .utils import echo, style, get_stream, ANSI
 
 
 class Arg(object):
@@ -86,8 +85,16 @@ def _cli(func, args):
 
         elif args[0] in ('-d', '--debug'):
             args.pop(0)
+
+            def gen():
+                while True:
+                    for c in ANSI.colors[1:7]:
+                        yield c
+            gen = gen()
+
             for arg in func(args, stream):
-                echo(" > ".join(style(state, fg='red') for state in arg.history))
+                color = next(gen)
+                echo("\n".join(style(text_type(state), fg=color) for state in arg.history))
             sys.exit()
 
         elif args[0] in ('-bs', '--bash-source'):
