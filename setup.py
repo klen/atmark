@@ -4,7 +4,7 @@ import re
 import sys
 from os import path as op
 
-from setuptools import setup
+from setuptools import setup, find_packages
 from setuptools.command.test import test as TestCommand
 
 
@@ -14,7 +14,7 @@ def _read(fname):
     except IOError:
         return ''
 
-_meta = _read('atmark.py')
+_meta = _read('atmark/__init__.py')
 _license = re.search(r'^__license__\s*=\s*"(.*)"', _meta, re.M).group(1)
 _project = re.search(r'^__project__\s*=\s*"(.*)"', _meta, re.M).group(1)
 _version = re.search(r'^__version__\s*=\s*"(.*)"', _meta, re.M).group(1)
@@ -63,12 +63,12 @@ setup(
 
     entry_points={
         'console_scripts': [
-            '@ = atmark:at',
-            '@@ = atmark:atat',
+            '@ = atmark.atmark:at',
+            '@@ = atmark.atmark:atat',
         ],
     },
 
-    py_modules=['atmark'],
+    packages=find_packages(include=('atmark',)),
     tests_require=['pytest'],
     cmdclass={'test': __PyTest},
 )

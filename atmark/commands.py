@@ -1,44 +1,16 @@
-"""
-
-Atmark (@) -- is a command line utility for parsing text input and generating output.
-
-You can pipe data within a Atmark (@) statement using standard unix style pipes ("|").
-Provide for Atmark function composition and let them work for you.
-
-Example. Replace "_" with "-" in files in current dir and change the files extensions to jpg:
-
-    $ ls | @ replace _ -  split . "mv # @.jpg"
-
-It is mean:
-
-    $ ls > replace($LINE, "_", "-") > split($RESULT, ".") > format($RESULT, "mv $LINE $RESULT.jpg")
-
-You can use "@ --debug ARGS" for debug Armark commands.
-
-===================================================================================
-LIST OF THE BUILT IN FUNCTIONS
-
-"""
-
-from __future__ import print_function
-
-# Package information
-# ===================
-
-__version__ = "0.5.1"
-__project__ = "atmark"
-__author__ = "Kirill Klenov <horneds@gmail.com>"
-__license__ = "BSD"
-
-import sys
-import codecs
-from functools import wraps
 from re import compile as re
 
+from functools import wraps
 
-AT_COMMANDS = {}
-PY2 = sys.version_info[0] == 2
+from ._compat import string_decode, text_type
+from .utils import style
 
+
+AT_COMMANDS = dict()
+AT_COMMANDS_DOCS = """
+===================================================================================
+LIST OF THE BUILT IN FUNCTIONS
+"""
 CURRENT_RE = re(r'(?=[^\\]?)@')
 HISTORY_RE = re(r'(?=[^\\]?)#(\d)*')
 
@@ -49,8 +21,9 @@ def _command(nump=0, *syns):
     def decorator(func):
         name = func.__name__[3:]
         AT_COMMANDS[name] = func, nump
-        global __doc__                  # noqa
-        __doc__ += "\n\n" + (func.__doc__ or "%s") % "/".join((name,) + syns)   # noqa
+        global AT_COMMANDS_DOCS
+        AT_COMMANDS_DOCS += "\n\n" + (func.__doc__ or "%s") % style(
+            "/".join((name,) + syns), fg='yellow')
         for syn in syns or []:
             AT_COMMANDS[syn] = func, nump
 
@@ -203,7 +176,10 @@ def at_sort(arg):
 def at_split(arg, p):
     """ %s SEPARATOR -- return a list of the substrings of the string splited by SEPARATOR """
     value = text_type(arg)
-    return value.split(p)
+    try:
+        return value.split(p)
+    except ValueError:
+        return None
 
 
 @_command(0, 'sp_')
@@ -245,125 +221,4 @@ def at_upper(arg):
     value = text_type(arg)
     return value.upper()
 
-
-class Arg(object):
-
-    """ Store changes history. """
-
-    def __init__(self, value=""):
-        self.start = value
-        self.value = value
-        self.history = [value]
-
-    def __repr__(self):
-        return " > ".join(text_type(h) for h in self.history)
-
-    def __str__(self):
-        if isinstance(self.value, list):
-            return "".join(self.value)
-        return text_type(self.value)
-
-    __unicode__ = __str__
-
-    def process(self, tokens):
-        for func, params in tokens:
-            self.update(func(self, *params))
-            if self.value is None:
-                break
-        return self
-
-    def update(self, value):
-        self.value = value
-        self.history.append(value)
-
-
-def _at(args, stream):
-    tokens = list(_tokenize(args))
-    for arg in stream:
-        arg = Arg(arg).process(tokens)
-        if arg.value is None:
-            continue
-        yield arg
-
-
-def _atat(args, stream):
-    tokens = list(_tokenize(args))
-    arg = Arg(stream).process(tokens)
-    if not isinstance(arg.value, list):
-        return [arg.value]
-    return arg.value
-
-
-def _cli(func, args):
-    stream = _get_stream()
-    if args and args[0] in ('-h', '--help'):
-        print(__doc__)
-        sys.exit()
-    mod = text_type
-    if args and args[0] in ('-d', '--debug'):
-        args.pop(0)
-        mod = repr
-    for arg in func(args, stream):
-        print(mod(arg))
-    sys.exit()
-
-
-def _tokenize(args):
-
-    def take_params(args, nump):
-        """ Function description. """
-        while nump:
-            nump -= 1
-            yield args.pop(0)
-
-    try:
-        while args:
-            arg = args.pop(0).strip()
-            if arg in AT_COMMANDS:
-                func, nump = AT_COMMANDS[arg]
-                params = list(take_params(args, nump)) if nump else []
-                if arg == 'map':
-                    f, nump = AT_COMMANDS[params[0]]
-                    params = [f] + list(take_params(args, nump))
-                yield func, params
-                continue
-            yield at_format, [arg]
-    except IndexError:
-        yield at_format, ['@']
-
-
-def _get_stream():
-    encoding = sys.getdefaultencoding()
-    stream = []
-    if sys.stdin.isatty():
-        return stream
-
-    encoding = sys.stdin.encoding or encoding
-    if codecs.lookup(encoding).name == 'ascii':
-        encoding = 'utf-8'
-    codecs.getwriter(encoding)(sys.stdout)
-    for line in sys.stdin.readlines():
-        line = line.decode(encoding).strip()
-        stream.append(line)
-    return stream
-
-
-__doc__ += "\n\n Current version: " + __version__
-
-at = lambda: _cli(_at, sys.argv[1:])
-atat = lambda: _cli(_atat, sys.argv[1:])
-
-
-# Compat tools
-if PY2:
-    text_type = unicode
-    string_decode = lambda b: text_type(b).decode('string_escape')
-else:
-    text_type = str
-    string_decode = lambda b: text_type(b.encode('utf-8').decode('unicode_escape'))
-
-
-if __name__ == '__main__':
-    at()
-
-# pylama:ignore=E731
+# pylama:ignore=W0603

@@ -249,12 +249,12 @@ def test_map():
 
 
 def _at(stream, *chain):
-    from atmark import _at as _, text_type
+    from atmark.atmark import _at as _, text_type
     stream = stream.split()
     return list(map(text_type, _(list(chain), stream=stream)))
 
 
 def _atat(stream, *chain):
-    from atmark import _atat as _
+    from atmark.atmark import _atat as _
     stream = stream.split()
     return _(list(chain), stream=stream)
