@@ -27,7 +27,7 @@ register:
 # target: upload - Upload module on PyPi
 release: clean
 	@python setup.py sdist upload || echo 'Skip sdist upload'
-	# @python setup.py bdist_wheel upload || echo 'Skip bdist upload'
+	@python setup.py bdist_wheel upload || echo 'Skip bdist upload'
 
 .PHONY: test
 # target: test - Runs tests
