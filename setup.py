@@ -19,14 +19,6 @@ _license = re.search(r'^__license__\s*=\s*"(.*)"', _meta, re.M).group(1)
 _project = re.search(r'^__project__\s*=\s*"(.*)"', _meta, re.M).group(1)
 _version = re.search(r'^__version__\s*=\s*"(.*)"', _meta, re.M).group(1)
 
-install_requires = [
-    l for l in _read('requirements.txt').split('\n')
-    if l and not l.startswith('#')]
-
-tests_require = [
-    l for l in _read('requirements-tests.txt').split('\n')
-    if l and not l.startswith('#')]
-
 
 class __PyTest(TestCommand):
 
@@ -77,8 +69,6 @@ setup(
     },
 
     py_modules=['atmark'],
-    include_package_data=True,
-    install_requires=install_requires,
-    tests_require=tests_require,
+    tests_require=['pytest'],
     cmdclass={'test': __PyTest},
 )
