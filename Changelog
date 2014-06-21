@@ -1,3 +1,9 @@
+2014-06-21  klen
+
+	* Version 0.6.0
+	* Supports bash complete
+	* Supports colors
+
 2014-06-20  klen
 
 	* Version 0.5.0
