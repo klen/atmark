@@ -2,8 +2,7 @@ import re
 
 from functools import wraps
 
-from ._compat import string_decode, text_type
-from .utils import style
+from .utils import style, unicode_escape, text_type
 
 
 AT_COMMANDS = dict()
@@ -22,8 +21,8 @@ def _command(nump=0, *syns):
         name = func.__name__[3:]
         AT_COMMANDS[name] = func, nump
         global AT_COMMANDS_DOCS
-        AT_COMMANDS_DOCS += "\n\n" + (func.__doc__ or "%s") % style(
-            "/".join((name,) + syns), fg='yellow')
+        AT_COMMANDS_DOCS += "\n\n" + (func.__doc__ or "%s") % "/".join(
+            style(n, fg='yellow') for n in (name,) + syns)
         for syn in syns or []:
             AT_COMMANDS[syn] = func, nump
 
@@ -47,7 +46,7 @@ def at_format(arg, pattern):
 
         $ ls | @ upper format "@.BAK"
         $ ls | @ upper "@.BAK" """
-    pattern = string_decode(pattern)
+    pattern, _ = unicode_escape(pattern)
     value = text_type(arg)
     value = CURRENT_RE.sub(value, pattern)
 
@@ -87,17 +86,6 @@ def at_filter(arg):
     return arg.value.strip() or None
 
 
-@_command(1, 'g')
-def at_grep(arg, regexp):
-    """ %s REGEXP \t\t -- filter results by REGEXP """
-    values = arg.value
-    if not isinstance(values, list):
-        values = [values]
-    for v in values:
-        if re.search(regexp, v):
-            return arg.value
-
-
 @_command(0, 'h')
 def at_head(arg):
     """ %s \t\t -- extract the first element/character of a list/string """
@@ -117,7 +105,7 @@ def at_index(arg, index):
 @_command(1, 'j')
 def at_join(arg, sep):
     """ %s SEPARATOR \t -- concatenate a list/string with intervening occurrences of SEPARATOR """
-    sep = string_decode(sep)
+    sep, _ = unicode_escape(sep)
     return sep.join(arg.value)
 
 
@@ -180,11 +168,11 @@ def at_rstrip(arg, pattern):
     return value.rstrip(pattern)
 
 
-@_command(1, '~=')
-def at_seems(arg, regexp):
-    """ %s REGEXP \t -- return None if arg is equal to PATTERN. """
+@_command(1, 'g')
+def at_grep(arg, regexp):
+    """ %s REGEXP \t\t -- filter results by REGEXP """
     value = text_type(arg.value)
-    if re.match(regexp, value):
+    if re.search(regexp, value):
         return arg.value
 
 

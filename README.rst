@@ -138,18 +138,19 @@ Get help
 
     Example. Replace "_" with "-" in files in current dir and change the files extensions to jpg:
 
-        $ ls | @ sub _ -  split . "mv # @.jpg"
+        $ ls | @ replace _ -  split . "mv # @.jpg"
 
     It is mean:
 
-        $ ls > sub($LINE, "_", "-") > split($RESULT, ".") > format($RESULT, "mv $LINE $RESULT.jpg")
+        $ ls > replace($LINE, "_", "-") > split($RESULT, ".") > format($RESULT, "mv $LINE $RESULT.jpg")
 
     You can use "@ --debug ARGS" for debug Armark commands.
 
     ===================================================================================
     LIST OF THE BUILT IN FUNCTIONS
 
-    format PATTERN -- format and print a string.
+
+    format PATTERN 	 -- format and print a string.
 
         Symbol '@' in PATTERN represents the current value in process of composition of fuctions.
         Symbol '#' in PATTERN represents the history state.
@@ -160,51 +161,55 @@ Get help
             $ ls | @ upper format "@.BAK"
             $ ls | @ upper "@.BAK"
 
-    capitalize/cap -- capitalize the string.
+    capitalize/cap 	 -- capitalize the string.
 
-    drop N -- drop N elements from list/string.
+    drop N 		 -- drop N elements from list/string.
 
-    filter/if -- filter results by value has length
+    equal/== PATTERN 	 -- return None if arg is not equal to PATTERN.
 
-    grep/g REGEXP -- filter results by REGEXP
+    filter/if 		 -- filter results by value has length
 
-    head/h -- extract the first element/character of a list/string
+    head/h 		 -- extract the first element/character of a list/string
 
-    index/ix/i N -- get the N-th element/character from list/string.
+    index/ix/i N 		 -- get the N-th element/character from list/string.
 
-    join/j SEPARATOR -- concatenate a list/string with intervening occurrences of SEPARATOR
+    join/j SEPARATOR 	 -- concatenate a list/string with intervening occurrences of SEPARATOR
 
-    join_/j_ -- same as join but SEPARATOR set as ' '
+    join_/j_ 		 -- same as join but SEPARATOR set as ' '
 
-    last -- get last element/character of incoming list/string.
+    last 			 -- get last element/character of incoming list/string.
 
-    length/len -- return length of list/string.
+    length/len 		 -- return length of list/string.
 
-    lower/l -- make the string is lowercase
+    lower/l 		 -- make the string is lowercase
 
-    map FUNCTION -- apply the following function to each element/character in list/string.
+    map FUNCTION 		 -- apply the following function to each element/character in list/string.
 
-    replace/sub/r FROM TO -- replace in a string/list FROM to TO.
+    notequal/!= PATTERN 	 -- return None if arg is equal to PATTERN.
 
-    reverse -- reverse list/string.
+    replace/r/sub FROM TO 	 -- replace in a string/list FROM to TO.
+
+    reverse/rev 		 -- reverse list/string.
 
     rstrip/rs/rtrim PATTERN -- return the string with trailing PATTERN removed.
 
-    sort -- sort list/string.
+    grep/g REGEXP 		 -- filter results by REGEXP
 
-    split/sp SEPARATOR -- return a list of the substrings of the string splited by SEPARATOR
+    sort 			 -- sort list/string.
 
-    split_/sp_ -- same as split by splited a string by whitespace characters
+    split/sp SEPARATOR 	 -- return a list of the substrings of the string splited by SEPARATOR
 
-    strip/s/trim PATTERN -- return the string with leading and trailing PATTERN removed.
+    split_/sp_ 		 -- same as split by splited a string by whitespace characters
 
-    strip_/s_/trim_ -- same as split by trim a string by whitespace characters
+    strip/s/trim PATTERN 	 -- return the string with leading and trailing PATTERN removed.
 
-    tail/t -- extract the elements after the head of a list
+    strip_/s_/trim_ 	 -- same as strip but trims a whitespaces.
 
-    take N -- take N elements from list/string.
+    tail/t 		 -- extract the elements after the head of a list
 
-    upper/u -- make the string is uppercase
+    take N 		 -- take N elements from list/string.
+
+    upper/u 		 -- make the string is uppercase.
 
 
 .. _bugtracker:
