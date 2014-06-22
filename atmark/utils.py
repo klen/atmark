@@ -2,13 +2,12 @@ import codecs
 import sys
 from re import compile as re
 
-from ._compat import string_types, text_type
-
 
 ANSI = lambda: None
 ANSI.colors = 'black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'white', 'reset'
 ANSI.reset = '\033[0m'
 ANSI.re = re(r'\033\[((?:\d|;)*)([a-zA-Z])')
+PY2 = sys.version_info[0] == 2
 
 
 def isatty(stream):
@@ -18,20 +17,38 @@ def isatty(stream):
         return False
 
 
-def get_stream():
-    encoding = sys.getdefaultencoding()
-    stream = []
-    if isatty(sys.stdin):
-        return stream
+if PY2:
+    from cStringIO import StringIO
 
-    encoding = sys.stdin.encoding or encoding
+    text_type = unicode
+    string_types = (str, unicode)
+    is_bytes = lambda x: isinstance(x, (buffer, bytearray))
+
+else:
+    from io import StringIO
+
+    text_type = str
+    string_types = (str,)
+    is_bytes = lambda x: isinstance(x, (bytes, bytearray))
+
+
+def get_stream(stream=sys.stdin):
+
+    if isatty(stream):
+        stream = StringIO()
+
+    encoding = getattr(stream, 'encoding', None) or sys.getdefaultencoding()
     if codecs.lookup(encoding).name == 'ascii':
         encoding = 'utf-8'
     codecs.getwriter(encoding)(sys.stdout)
-    for line in sys.stdin.readlines():
-        line = line.decode(encoding).strip()
-        stream.append(line)
-    return stream
+
+    def gen():
+        for line in stream.readlines():
+            if not isinstance(line, text_type):
+                line = line.decode(encoding)
+            yield line.strip()
+
+    return gen()
 
 
 def style(text, fg=None, bg=None, bold=None, dim=None, underline=None,
@@ -79,5 +96,7 @@ def echo(message, nl=True):
         stream.write('\n')
 
     stream.flush()
+
+unicode_escape = codecs.getdecoder('unicode_escape')
 
 # pylama:ignore=E731

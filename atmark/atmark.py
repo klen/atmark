@@ -18,9 +18,8 @@ import os
 import sys
 
 from ._bashcomplete import do_complete, COMPLETION_SCRIPT
-from ._compat import text_type
 from .commands import AT_COMMANDS, at_format, AT_COMMANDS_DOCS
-from .utils import echo, style, get_stream, ANSI
+from .utils import echo, style, get_stream, ANSI, text_type
 
 
 class Arg(object):
@@ -56,24 +55,21 @@ class Arg(object):
 
 def _at(args, stream):
     tokens = list(_tokenize(args))
-    for arg in stream:
-        arg = Arg(arg).process(tokens)
-        if arg.value is None:
-            continue
-        yield arg
+    for line in stream:
+        arg = Arg(line).process(tokens)
+        if arg.value is not None:
+            yield arg
 
 
 def _atat(args, stream):
     tokens = list(_tokenize(args))
-    arg = Arg(stream).process(tokens)
+    arg = Arg(list(stream)).process(tokens)
     if not isinstance(arg.value, list):
         return [arg.value]
     return arg.value
 
 
 def _cli(func, args):
-    stream = get_stream()
-
     if os.environ.get('_ATMARK_COMPLETE'):
         return do_complete()
 
@@ -92,14 +88,18 @@ def _cli(func, args):
                         yield c
             gen = gen()
 
+            stream = get_stream()
             for arg in func(args, stream):
                 color = next(gen)
-                echo("\n".join(style(text_type(state), fg=color) for state in arg.history))
+                echo("\n".join(
+                    style("#%d" % num + " " + text_type(state), fg=color)
+                    for num, state in enumerate(arg.history)))
             sys.exit()
 
         elif args[0] in ('-bs', '--bash-source'):
             return echo(COMPLETION_SCRIPT)
 
+    stream = get_stream()
     for arg in func(args, stream):
         echo(arg)
 

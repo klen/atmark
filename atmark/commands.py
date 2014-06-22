@@ -1,18 +1,17 @@
-from re import compile as re
+import re
 
 from functools import wraps
 
-from ._compat import string_decode, text_type
-from .utils import style
+from .utils import style, unicode_escape, text_type
 
 
 AT_COMMANDS = dict()
-AT_COMMANDS_DOCS = """
+AT_COMMANDS_DOCS = style("""
 ===================================================================================
 LIST OF THE BUILT IN FUNCTIONS
-"""
-CURRENT_RE = re(r'(?=[^\\]?)@')
-HISTORY_RE = re(r'(?=[^\\]?)#(\d)*')
+""", fg='yellow')
+CURRENT_RE = re.compile(r'(?=[^\\]?)@')
+HISTORY_RE = re.compile(r'(?=[^\\]?)#(\d)*')
 
 
 def _command(nump=0, *syns):
@@ -22,8 +21,8 @@ def _command(nump=0, *syns):
         name = func.__name__[3:]
         AT_COMMANDS[name] = func, nump
         global AT_COMMANDS_DOCS
-        AT_COMMANDS_DOCS += "\n\n" + (func.__doc__ or "%s") % style(
-            "/".join((name,) + syns), fg='yellow')
+        AT_COMMANDS_DOCS += "\n\n" + (func.__doc__ or "%s") % "/".join(
+            style(n, fg='yellow') for n in (name,) + syns)
         for syn in syns or []:
             AT_COMMANDS[syn] = func, nump
 
@@ -37,7 +36,7 @@ def _command(nump=0, *syns):
 
 @_command(1)
 def at_format(arg, pattern):
-    """ %s PATTERN -- format and print a string.
+    """ %s PATTERN \t -- format and print a string.
 
     Symbol '@' in PATTERN represents the current value in process of composition of fuctions.
     Symbol '#' in PATTERN represents the history state.
@@ -47,7 +46,7 @@ def at_format(arg, pattern):
 
         $ ls | @ upper format "@.BAK"
         $ ls | @ upper "@.BAK" """
-    pattern = string_decode(pattern)
+    pattern, _ = unicode_escape(pattern)
     value = text_type(arg)
     value = CURRENT_RE.sub(value, pattern)
 
@@ -60,47 +59,42 @@ def at_format(arg, pattern):
 
 @_command(0, 'cap')
 def at_capitalize(arg):
-    """ %s -- capitalize the string. """
+    """ %s \t -- capitalize the string. """
     value = text_type(arg)
     return value[0].upper() + value[1:].lower()
 
 
 @_command(1)
 def at_drop(arg, length):
-    """ %s N -- drop N elements from list/string. """
+    """ %s N \t\t -- drop N elements from list/string. """
     return arg.value[int(length):]
+
+
+@_command(1, '==')
+def at_equal(arg, pattern):
+    """ %s PATTERN \t -- return None if arg is not equal to PATTERN. """
+    value = text_type(arg)
+    if value == pattern:
+        return value
 
 
 @_command(0, 'if')
 def at_filter(arg):
-    """ %s -- filter results by value has length """
+    """ %s \t\t -- filter results by value has length """
     if isinstance(arg.value, list):
         return arg.value or None
     return arg.value.strip() or None
 
 
-@_command(1, 'g')
-def at_grep(arg, regexp):
-    """ %s REGEXP -- filter results by REGEXP """
-    values = arg.value
-    regexp = re(regexp)
-    if not isinstance(values, list):
-        values = [values]
-    for v in values:
-        if regexp.search(v):
-            return arg.value
-    return None
-
-
 @_command(0, 'h')
 def at_head(arg):
-    """ %s -- extract the first element/character of a list/string """
+    """ %s \t\t -- extract the first element/character of a list/string """
     return arg.value and arg.value[0] or None
 
 
 @_command(1, 'ix', 'i')
 def at_index(arg, index):
-    """ %s N -- get the N-th element/character from list/string. """
+    """ %s N \t\t -- get the N-th element/character from list/string. """
     try:
         index = int(index)
     except ValueError:
@@ -110,52 +104,60 @@ def at_index(arg, index):
 
 @_command(1, 'j')
 def at_join(arg, sep):
-    """ %s SEPARATOR -- concatenate a list/string with intervening occurrences of SEPARATOR """
-    sep = string_decode(sep)
+    """ %s SEPARATOR \t -- concatenate a list/string with intervening occurrences of SEPARATOR """
+    sep, _ = unicode_escape(sep)
     return sep.join(arg.value)
 
 
 @_command(0, 'j_')
 def at_join_(arg):
-    """ %s -- same as join but SEPARATOR set as ' ' """
+    """ %s \t\t -- same as join but SEPARATOR set as ' ' """
     return " ".join(arg.value)
 
 
 @_command()
 def at_last(arg):
-    """ %s -- get last element/character of incoming list/string. """
+    """ %s \t\t\t -- get last element/character of incoming list/string. """
     return arg.value[-1]
 
 
 @_command(0, 'len')
 def at_length(arg):
-    """ %s -- return length of list/string. """
+    """ %s \t\t -- return length of list/string. """
     return text_type(len(arg.value))
 
 
 @_command(0, 'l')
 def at_lower(arg):
-    """ %s -- make the string is lowercase """
+    """ %s \t\t -- make the string is lowercase """
     value = text_type(arg)
     return value.lower()
 
 
 @_command(1)
 def at_map(arg, func, *params):
-    """ %s FUNCTION -- apply the following function to each element/character in list/string. """
+    """ %s FUNCTION \t\t -- apply the following function to each element/character in list/string. """ # noqa
     return [func(el, *params) for el in arg.value]
+
+
+@_command(1, '!=')
+def at_notequal(arg, pattern):
+    """ %s PATTERN \t -- return None if arg is equal to PATTERN. """
+    value = text_type(arg)
+    if value != pattern:
+        return value
 
 
 @_command(2, 'r', 'sub')
 def at_replace(arg, p1, p2):
-    """ %s FROM TO -- replace in a string/list FROM to TO. """
+    """ %s FROM TO \t -- replace in a string/list FROM to TO. """
     value = text_type(arg)
     return value.replace(p1, p2)
 
 
-@_command()
+@_command(0, 'rev')
 def at_reverse(arg):
-    """ %s -- reverse list/string. """
+    """ %s \t\t -- reverse list/string. """
     return arg.value[::-1]
 
 
@@ -166,15 +168,23 @@ def at_rstrip(arg, pattern):
     return value.rstrip(pattern)
 
 
+@_command(1, 'g')
+def at_grep(arg, regexp):
+    """ %s REGEXP \t\t -- filter results by REGEXP """
+    value = text_type(arg.value)
+    if re.search(regexp, value):
+        return arg.value
+
+
 @_command()
 def at_sort(arg):
-    """ %s -- sort list/string. """
+    """ %s \t\t\t -- sort list/string. """
     return list(sorted(arg.value))
 
 
 @_command(1, 'sp')
 def at_split(arg, p):
-    """ %s SEPARATOR -- return a list of the substrings of the string splited by SEPARATOR """
+    """ %s SEPARATOR \t -- return a list of the substrings of the string splited by SEPARATOR """
     value = text_type(arg)
     try:
         return value.split(p)
@@ -184,41 +194,42 @@ def at_split(arg, p):
 
 @_command(0, 'sp_')
 def at_split_(arg):
-    """ %s -- same as split by splited a string by whitespace characters """
+    """ %s \t\t -- same as split by splited a string by whitespace characters """
     value = text_type(arg)
     return value.split()
 
 
 @_command(1, 's', 'trim')
 def at_strip(arg, pattern):
-    """ %s PATTERN -- return the string with leading and trailing PATTERN removed. """
+    """ %s PATTERN \t -- return the string with leading and trailing PATTERN removed. """
     value = text_type(arg)
     return value.strip(pattern)
 
 
 @_command(0, 's_', 'trim_')
 def at_strip_(arg):
-    """ %s -- same as strip but trims a whitespaces. """
+    """ %s \t -- same as strip but trims a whitespaces. """
     value = text_type(arg)
     return value.strip()
 
 
 @_command(0, 't')
 def at_tail(arg):
-    """ %s -- extract the elements after the head of a list """
+    """ %s \t\t -- extract the elements after the head of a list """
     return arg.value[1:]
 
 
 @_command(1)
 def at_take(arg, length):
-    """ %s N -- take N elements from list/string. """
+    """ %s N \t\t -- take N elements from list/string. """
     return arg.value[:int(length)]
 
 
 @_command(0, 'u')
 def at_upper(arg):
-    """ %s -- make the string is uppercase """
+    """ %s \t\t -- make the string is uppercase. """
     value = text_type(arg)
     return value.upper()
+
 
 # pylama:ignore=W0603

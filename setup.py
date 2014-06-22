@@ -68,7 +68,7 @@ setup(
         ],
     },
 
-    packages=find_packages(include=('atmark',)),
+    packages=find_packages(),
     tests_require=['pytest'],
     cmdclass={'test': __PyTest},
 )

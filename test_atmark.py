@@ -25,7 +25,7 @@ def test_at():
 
 
 def test_unicode():
-    result = _at(u"ехали медведи", "upper")
+    result = _at("ехали медведи", "upper")
     assert [u'ЕХАЛИ', u'МЕДВЕДИ'] == result
 
 
@@ -212,6 +212,9 @@ def test_join():
     result = _at("/test.py /some-file", "split", ".", "j", ":")
     assert ["/test:py", "/some-file"] == result
 
+    result = _at("/test.py /some-file", "split", ".", "j_")
+    assert ["/test py", "/some-file"] == result
+
     result = _atat("/test.py /some-file", "j", ">")
     assert ["/test.py>/some-file"] == result
 
@@ -248,13 +251,42 @@ def test_map():
     assert ["test.py", "some-file"] == result
 
 
-def _at(stream, *chain):
-    from atmark.atmark import _at as _, text_type
-    stream = stream.split()
-    return list(map(text_type, _(list(chain), stream=stream)))
+def test_equal():
+    result = _at("test.py some-file", "==", "test.py")
+    assert ["test.py"] == result
 
 
-def _atat(stream, *chain):
-    from atmark.atmark import _atat as _
-    stream = stream.split()
-    return _(list(chain), stream=stream)
+def test_notequal():
+    result = _at("test.py some-file", "!=", "test.py")
+    assert ["some-file"] == result
+
+
+def test_last():
+    result = _at("test.py some-file", "split", ".", "last")
+    assert ["py", "some-file"] == result
+
+
+def test_sort():
+    result = _at("test.py some-file", "sort")
+    assert ['.epstty', '-eefilmos'] == result
+
+
+def test_reverse():
+    result = _at("test.py some-file", "rev")
+    assert ["yp.tset", "elif-emos"] == result
+
+
+def _at(data, *chain):
+    from atmark.atmark import _at as _, text_type, get_stream
+    from atmark.utils import StringIO
+    stream = StringIO("\n".join(data.split()))
+    gen = get_stream(stream)
+    return list(map(text_type, _(list(chain), stream=gen)))
+
+
+def _atat(data, *chain):
+    from atmark.atmark import _atat as _, get_stream
+    from atmark.utils import StringIO
+    stream = StringIO("\n".join(data.split()))
+    gen = get_stream(stream)
+    return _(list(chain), stream=gen)
