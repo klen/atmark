@@ -212,6 +212,9 @@ def test_join():
     result = _at("/test.py /some-file", "split", ".", "j", ":")
     assert ["/test:py", "/some-file"] == result
 
+    result = _at("/test.py /some-file", "split", ".", "j_")
+    assert ["/test py", "/some-file"] == result
+
     result = _atat("/test.py /some-file", "j", ">")
     assert ["/test.py>/some-file"] == result
 
@@ -246,6 +249,36 @@ def test_grep():
 def test_map():
     result = _at("test459.py some-file234", "split", ".", "map", "trim", "123456789", "join", ".")
     assert ["test.py", "some-file"] == result
+
+
+def test_equal():
+    result = _at("test.py some-file", "==", "test.py")
+    assert ["test.py"] == result
+
+
+def test_notequal():
+    result = _at("test.py some-file", "!=", "test.py")
+    assert ["some-file"] == result
+
+
+def test_seems():
+    result = _at("test.py some-file", "~=", "^some")
+    assert ["some-file"] == result
+
+
+def test_last():
+    result = _at("test.py some-file", "split", ".", "last")
+    assert ["py", "some-file"] == result
+
+
+def test_sort():
+    result = _at("test.py some-file", "sort")
+    assert ['.epstty', '-eefilmos'] == result
+
+
+def test_reverse():
+    result = _at("test.py some-file", "rev")
+    assert ["yp.tset", "elif-emos"] == result
 
 
 def _at(stream, *chain):
