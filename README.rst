@@ -171,37 +171,37 @@ Get help
 
     head/h 		 -- extract the first element/character of a list/string
 
-    index/ix/i N 		 -- get the N-th element/character from list/string.
+    index/ix/i N 	 -- get the N-th element/character from list/string.
 
     join/j SEPARATOR 	 -- concatenate a list/string with intervening occurrences of SEPARATOR
 
     join_/j_ 		 -- same as join but SEPARATOR set as ' '
 
-    last 			 -- get last element/character of incoming list/string.
+    last 		 -- get last element/character of incoming list/string.
 
     length/len 		 -- return length of list/string.
 
     lower/l 		 -- make the string is lowercase
 
-    map FUNCTION 		 -- apply the following function to each element/character in list/string.
+    map FUNCTION 	 -- apply the following function to each element/character in list/string.
 
-    notequal/!= PATTERN 	 -- return None if arg is equal to PATTERN.
+    notequal/!= PATTERN  -- return None if arg is equal to PATTERN.
 
-    replace/r/sub FROM TO 	 -- replace in a string/list FROM to TO.
+    replace/r/sub FROM TO  -- replace in a string/list FROM to TO.
 
-    reverse/rev 		 -- reverse list/string.
+    reverse/rev 	 -- reverse list/string.
 
     rstrip/rs/rtrim PATTERN -- return the string with trailing PATTERN removed.
 
-    grep/g REGEXP 		 -- filter results by REGEXP
+    grep/g REGEXP 	 -- filter results by REGEXP
 
-    sort 			 -- sort list/string.
+    sort 		 -- sort list/string.
 
     split/sp SEPARATOR 	 -- return a list of the substrings of the string splited by SEPARATOR
 
     split_/sp_ 		 -- same as split by splited a string by whitespace characters
 
-    strip/s/trim PATTERN 	 -- return the string with leading and trailing PATTERN removed.
+    strip/s/trim PATTERN -- return the string with leading and trailing PATTERN removed.
 
     strip_/s_/trim_ 	 -- same as strip but trims a whitespaces.
 
