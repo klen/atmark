@@ -47,8 +47,6 @@ def at_format(arg, string):
         $ ls | @ upper format "@.BAK"
         $ ls | @ upper "@.BAK" """
     value = text_type(arg)
-    # from .utils import unicode_escape
-    # string, _ = unicode_escape(string)
     value = CURRENT_RE.sub(value, string)
 
     def get_history(m):

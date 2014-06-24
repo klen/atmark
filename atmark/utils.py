@@ -43,7 +43,10 @@ def get_stream(stream=sys.stdin):
     codecs.getwriter(encoding)(sys.stdout)
 
     def gen():
-        for line in stream.readlines():
+        while True:
+            line = stream.readline()
+            if not line:
+                break
             if not isinstance(line, text_type):
                 line = line.decode(encoding)
             yield line.strip('\n\r')
