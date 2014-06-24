@@ -69,6 +69,9 @@ def test_format():
     result = _at("test.py some-file", "format", "@_")
     assert ["test.py_", "some-file_"] == result
 
+    result = _at("1-2-3-4 5-6-7-8", "sp", "-", "drop", "2", "j_", "* @#99")
+    assert result == ['* 3 4', '* 7 8']
+
     result = _at("test.py some-file", "@_")
     assert ["test.py_", "some-file_"] == result
 
@@ -242,8 +245,22 @@ def test_grep():
     result = _at("/test.py /some-file", "grep", r"\.py$")
     assert ['/test.py'] == result
 
+    result = _at("123 234 125", "grep", "^12")
+    assert ['123', '125'] == result
+
     result = _at("/test.py /some-file", "g", r"\.py$")
     assert ['/test.py'] == result
+
+
+def test_nogrep():
+    result = _at("/test.py /some-file", "notgrep", r"\.py$")
+    assert ['/some-file'] == result
+
+    result = _at("123 234 125", "notgrep", "^12")
+    assert ['234'] == result
+
+    result = _at("/test.py /some-file", "ng", r"\.py$")
+    assert ['/some-file'] == result
 
 
 def test_map():
@@ -281,7 +298,7 @@ def _at(data, *chain):
     from atmark.utils import StringIO
     stream = StringIO("\n".join(data.split()))
     gen = get_stream(stream)
-    return list(map(text_type, _(list(chain), stream=gen)))
+    return list(map(text_type, _(map(str, chain), stream=gen)))
 
 
 def _atat(data, *chain):
@@ -289,4 +306,4 @@ def _atat(data, *chain):
     from atmark.utils import StringIO
     stream = StringIO("\n".join(data.split()))
     gen = get_stream(stream)
-    return _(list(chain), stream=gen)
+    return _(map(str, chain), stream=gen)

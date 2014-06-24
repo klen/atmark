@@ -2,7 +2,7 @@ import re
 
 from functools import wraps
 
-from .utils import style, unicode_escape, text_type
+from .utils import style, text_type, ANSI
 
 
 AT_COMMANDS = dict()
@@ -35,26 +35,30 @@ def _command(nump=0, *syns):
 
 
 @_command(1)
-def at_format(arg, pattern):
-    """ %s PATTERN \t -- format and print a string.
+def at_format(arg, string):
+    """ %s FORMAT_STRING \t -- format and print a string.
 
-    Symbol '@' in PATTERN represents the current value in process of composition of fuctions.
-    Symbol '#' in PATTERN represents the history state.
+    Symbol '@' in FORMAT_STRING represents the current value in process of composition of fuctions.
+    Symbol '#' in FORMAT_STRING represents the history state.
         Where   # or #0 -- first state, #<n> (#1, #2) -- state with number n
 
     Synonyms: You can drop `format` function name. This lines are equalent:
 
         $ ls | @ upper format "@.BAK"
         $ ls | @ upper "@.BAK" """
-    pattern, _ = unicode_escape(pattern)
     value = text_type(arg)
-    value = CURRENT_RE.sub(value, pattern)
+    # from .utils import unicode_escape
+    # string, _ = unicode_escape(string)
+    value = CURRENT_RE.sub(value, string)
 
     def get_history(m):
         index = int(m.group(1) or 0)
-        return text_type(arg.history[index])
-    value = HISTORY_RE.sub(get_history, value)
-    return value
+        try:
+            return text_type(arg.history[index])
+        except IndexError:
+            return ""
+
+    return HISTORY_RE.sub(get_history, value)
 
 
 @_command(0, 'cap')
@@ -105,7 +109,6 @@ def at_index(arg, index):
 @_command(1, 'j')
 def at_join(arg, sep):
     """ %s SEPARATOR \t -- concatenate a list/string with intervening occurrences of SEPARATOR """
-    sep, _ = unicode_escape(sep)
     return sep.join(arg.value)
 
 
@@ -113,6 +116,13 @@ def at_join(arg, sep):
 def at_join_(arg):
     """ %s \t\t -- same as join but SEPARATOR set as ' ' """
     return " ".join(arg.value)
+
+
+@_command(1)
+def at_kill(arg, regexp):
+    """ %s REGEXP \t\t -- replace in a string/list REGEXP to ''. """
+    value = text_type(arg)
+    return re.sub(regexp, "", value)
 
 
 @_command()
@@ -140,12 +150,27 @@ def at_map(arg, func, *params):
     return [func(el, *params) for el in arg.value]
 
 
+@_command(0, 'nc')
+def at_nocolor(arg):
+    """ %s \t\t -- Remove ansi colors from string. """
+    value = text_type(arg)
+    return ANSI.re.sub('', value)
+
+
 @_command(1, '!=')
 def at_notequal(arg, pattern):
     """ %s PATTERN \t -- return None if arg is equal to PATTERN. """
     value = text_type(arg)
     if value != pattern:
         return value
+
+
+@_command(1, 'ng')
+def at_notgrep(arg, regexp):
+    """ %s REGEXP \t -- filter results by REGEXP. Leave ungrepped """
+    value = text_type(arg.value)
+    if not re.search(regexp, value):
+        return arg.value
 
 
 @_command(2, 'r', 'sub')

@@ -19,7 +19,7 @@ import sys
 
 from ._bashcomplete import do_complete, COMPLETION_SCRIPT
 from .commands import AT_COMMANDS, at_format, AT_COMMANDS_DOCS
-from .utils import echo, style, get_stream, ANSI, text_type
+from .utils import echo, style, get_stream, ANSI, text_type, unicode_escape
 
 
 class Arg(object):
@@ -112,7 +112,7 @@ def _tokenize(args):
         """ Function description. """
         while nump:
             nump -= 1
-            yield args.pop(0)
+            yield unicode_escape(args.pop(0))
 
     try:
         while args:
@@ -125,7 +125,7 @@ def _tokenize(args):
                     params = [f] + list(take_params(args, nump))
                 yield func, params
                 continue
-            yield at_format, [arg]
+            yield at_format, [unicode_escape(arg)]
     except IndexError:
         yield at_format, ['@']
 
