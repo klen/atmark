@@ -298,12 +298,12 @@ def _at(data, *chain):
     from atmark.utils import StringIO
     stream = StringIO("\n".join(data.split()))
     gen = get_stream(stream)
-    return list(map(text_type, _(map(str, chain), stream=gen)))
+    return list(map(text_type, _(list(map(text_type, chain)), stream=gen)))
 
 
 def _atat(data, *chain):
-    from atmark.atmark import _atat as _, get_stream
+    from atmark.atmark import _atat as _, get_stream, text_type
     from atmark.utils import StringIO
     stream = StringIO("\n".join(data.split()))
     gen = get_stream(stream)
-    return _(map(str, chain), stream=gen)
+    return _(list(map(text_type, chain)), stream=gen)
