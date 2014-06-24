@@ -46,7 +46,7 @@ def get_stream(stream=sys.stdin):
         for line in stream.readlines():
             if not isinstance(line, text_type):
                 line = line.decode(encoding)
-            yield line.strip()
+            yield line.strip('\n\r')
 
     return gen()
 
@@ -97,6 +97,6 @@ def echo(message, nl=True):
 
     stream.flush()
 
-unicode_escape = codecs.getdecoder('unicode_escape')
+unicode_escape = lambda s: codecs.getdecoder('unicode_escape')(s)[0]
 
 # pylama:ignore=E731
