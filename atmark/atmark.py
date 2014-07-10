@@ -2,8 +2,8 @@
 
 Atmark (@) -- is a command line utility for parsing text input and generating output.
 
-You can pipe data within a Atmark (@) statement using standard unix style pipes ("|").
-Provide for Atmark function composition and let them work for you.
+You can pipe a data within Atmark (@) statement using standard unix style pipes ("|").
+Provide for Atmark a function composition and let them work for you.
 
 Example. Replace "_" with "-" in files in current dir and change the files extensions to jpg:
 
@@ -13,7 +13,7 @@ It is mean:
 
     $ ls > replace($LINE, "_", "-") > split($RESULT, ".") > format($RESULT, "mv $LINE $RESULT.jpg")
 
-You can use "@ --debug ARGS" for debug Armark commands. """
+You can use `--debug` argument (@ --debug ARGS) for debug Armark commands. """
 import os
 import sys
 

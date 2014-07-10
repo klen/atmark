@@ -26,6 +26,8 @@ register:
 .PHONY: upload
 # target: upload - Upload module on PyPi
 release: clean
+	@git push --all
+	@git push --tags
 	@python setup.py sdist upload || echo 'Skip sdist upload'
 	# @python setup.py bdist_wheel upload || echo 'Skip bdist upload'
 
