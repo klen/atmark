@@ -171,7 +171,7 @@ Get help
 
     head/h 		 -- extract the first element/character of a list/string
 
-    index/ix/i N 	 -- get the N-th element/character from list/string.
+    index/ix N 	         -- get the N-th element/character from list/string.
 
     join/j SEPARATOR 	 -- concatenate a list/string with intervening occurrences of SEPARATOR
 
